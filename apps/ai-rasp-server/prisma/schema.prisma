@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Room {
+  capacity          Int?
+  createdAt         DateTime           @default(now())
+  features          String?
+  id                String             @id @default(cuid())
+  lessonAssignments LessonAssignment[]
+  location          String?
+  name              String?
+  unavailableSlots  String?
+  updatedAt         DateTime           @updatedAt
+}
+
+model Course {
+  code                 String?
+  consecutiveHours     Boolean?
+  createdAt            DateTime           @default(now())
+  hoursPerWeek         Int?
+  id                   String             @id @default(cuid())
+  lessonAssignments    LessonAssignment[]
+  name                 String?
+  requiredRoomFeatures String?
+  sessionsPerWeek      Int?
+  typeField            String?
+  updatedAt            DateTime           @updatedAt
+}
+
+model Group {
+  code              String?
+  createdAt         DateTime           @default(now())
+  faculty           String?
+  id                String             @id @default(cuid())
+  lessonAssignments LessonAssignment[]
+  name              String?
+  preferredSlots    String?
+  specialization    String?
+  studentCount      Int?
+  studyYear         Int?
+  updatedAt         DateTime           @updatedAt
+}
+
+model Teacher {
+  createdAt           DateTime           @default(now())
+  departments         String?
+  id                  String             @id @default(cuid())
+  lessonAssignments   LessonAssignment[]
+  maxLoadHoursPerWeek Int?
+  name                String?
+  preferredSlots      String?
+  qualifications      String?
+  unavailableSlots    String?
+  updatedAt           DateTime           @updatedAt
+}
+
+model Constraint {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  typeField   String?
+  updatedAt   DateTime @updatedAt
+  weight      Int?
+}
+
+model ScheduleVersion {
+  createdAt          DateTime  @default(now())
+  generatedBy        String?
+  id                 String    @id @default(cuid())
+  scoreMetrics       String?
+  serializedSchedule String?
+  timestamp          DateTime?
+  updatedAt          DateTime  @updatedAt
+}
+
+model LessonAssignment {
+  course        Course?  @relation(fields: [courseId], references: [id])
+  courseId      String?
+  createdAt     DateTime @default(now())
+  durationSlots Int?
+  group         Group?   @relation(fields: [groupId], references: [id])
+  groupId       String?
+  id            String   @id @default(cuid())
+  room          Room?    @relation(fields: [roomId], references: [id])
+  roomId        String?
+  slot          Slot?    @relation(fields: [slotId], references: [id])
+  slotId        String?
+  teacher       Teacher? @relation(fields: [teacherId], references: [id])
+  teacherId     String?
+  updatedAt     DateTime @updatedAt
+}
+
+model Slot {
+  createdAt         DateTime           @default(now())
+  dayOfWeek         Int?
+  endTime           String?
+  id                String             @id @default(cuid())
+  lessonAssignments LessonAssignment[]
+  slotIndex         Int?
+  startTime         String?
+  updatedAt         DateTime           @updatedAt
+}
